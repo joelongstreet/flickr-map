@@ -13,17 +13,24 @@ if(process.env.REDIS_HOST){
 
 
 exports.fetchPhotosByDate = function(date, next){
+
+  var goGetIt = function(date, next){
+    flickr.fetchPhotosByDate(date, function(err, apiResults){
+      if(apiResults instanceof Array){
+        saveFlickrPhotos(date, apiResults);
+        if(next) next(err, apiResults);
+      } else{
+        if(next) next(err, []);
+      }
+    });
+  };
+
   client.get(date, function(err, results){
     if(results){
-      if(next) next(JSON.parse(results));
-    } else {
-      flickr.fetchPhotosByDate(date, function(apiResults){
-        if(apiResults instanceof Array){
-          saveFlickrPhotos(date, apiResults);
-          if(next) next(apiResults);
-        } else{
-          if(next) next([]);
-        }
+      if(next) next(err, JSON.parse(results));
+    } else{
+      goGetIt(date, function(err, photos){
+        if(next) next(err, photos);
       });
     }
   });

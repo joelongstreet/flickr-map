@@ -4,11 +4,12 @@ var flickr  = require('./flickr');
 
 
 var runJob = function(dates){
+  var moment = require('moment');
 
   var fetch = function(date){
     var dateString = moment(date).format('YYYY-MM-DD');
 
-    flickr.fetchPhotosByDate(dateString, function(photos){
+    flickr.fetchPhotosByDate(dateString, function(err, photos){
       if(photos instanceof Array){
         console.log('collected photos for: ', dateString);
         db.saveFlickrPhotos(dateString, photos);
@@ -34,7 +35,7 @@ exports.fillGapsInTimeline = function(){
       var nextDate = iterator.next();
       var formattedDate = moment(nextDate).format('YYYY-MM-DD');
       if(dates.indexOf(formattedDate) == -1){
-        missingDates.push(nextDate);
+        missingDates.push(formattedDate);
       }
     }
 

@@ -24,8 +24,8 @@ exports.fetchPhotosByDate = function(date, next){
     },
     next    : function(results){
       if(results.photos){
-        next(parsePhotos(results.photos.photo));
-      } else next(500);
+        next(null, parsePhotos(results.photos.photo));
+      } else next(404, []);
     }
   });
 };

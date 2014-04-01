@@ -8,8 +8,12 @@ exports.connector = function(server){
 
   io.sockets.on('connection', function(socket){
     socket.on('getPhotosByDate', function(date) {
-      db.fetchPhotosByDate(date, function(photos){
-        socket.emit('photos', photos);
+      db.fetchPhotosByDate(date, function(err, photos){
+        if(photos && photos.length){
+          socket.emit('photos', photos);
+        } else{
+          socket.emit('error', err);
+        }
       });
     });
   });
